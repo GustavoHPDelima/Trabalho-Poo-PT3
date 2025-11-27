@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Biblioteca AFYA</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <header class="sidebar__brand">
+        <span class="brand__tag">AFYA</span>
+        <div>
+          <p class="brand__title">Biblioteca Acadêmica</p>
+          <!-- <p class="brand__subtitle">Gerenciamento de empréstimos e devoluções</p> -->
+        </div>
+      </header>
+
+      <nav class="sidebar__nav">
+        <button class="nav-btn active" data-nav="dashboard">Dashboard</button>
+        <button class="nav-btn" data-nav="livros">Livros</button>
+        <button class="nav-btn" data-nav="usuarios">Usuários</button>
+        <button class="nav-btn" data-nav="emprestimos">Empréstimos</button>
+      </nav>
+
+      <!-- <footer class="sidebar__footer"> -->
+      <!-- <p>Dados persistidos no <strong>localStorage</strong>.</p> -->
+      <!-- </footer> -->
+    </aside>
+
+    <main class="content">
+      <section class="tab-section active" data-section="dashboard">
+        <h1>Visão Geral</h1>
+        <!-- <p class="section-subtitle">
+            Recriado em HTML, CSS e JavaScript puro, mantendo todas as regras de negócio.
+          </p> -->
+        <div id="dashboard-content"></div>
+      </section>
+
+      <section class="tab-section" data-section="livros">
+        <header class="section-header">
+          <div>
+            <h1>Catálogo de Livros</h1>
+            <p class="section-subtitle">
+              Cadastre novos títulos e gere empréstimos diretamente daqui.
+            </p>
+          </div>
+          <button id="btn-add-livro" class="primary-btn">+ Adicionar livro</button>
+        </header>
+        <div id="livros-grid" class="cards-grid"></div>
+      </section>
+
+      <section class="tab-section" data-section="usuarios">
+        <h1>Gestão de Usuários</h1>
+        <div class="two-columns">
+          <!-- Export / Import (Fase 3 helpers) -->
+          <div class="panel">
+            <h2>Export / Import (entrega)</h2>
+            <div style="display:flex; gap:0.6rem; align-items:center;">
+              <button id="btn-export-json" class="primary-btn">Exportar dados (JSON)</button>
+              <input id="import-file" type="file" accept=".json" style="display:none;" />
+              <button id="btn-import-json" class="primary-btn"
+                style="background:linear-gradient(135deg,#f59e0b,#f97316);">Importar dados (JSON)</button>
+            </div>
+          </div>
+
+          <form id="form-usuario" class="panel form-panel">
+            <h2>Novo usuário</h2>
+            <label>
+              Nome completo
+              <input type="text" name="nome" placeholder="Ex.: Ana Souza" required />
+            </label>
+            <label>
+              Tipo
+              <select name="tipo" required>
+                <option value="Estudante">Estudante</option>
+                <option value="Professor">Professor</option>
+                <option value="Bibliotecário">Bibliotecário</option>
+              </select>
+            </label>
+            <button type="submit" class="primary-btn">Cadastrar</button>
+          </form>
+
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Usuários cadastrados</h2>
+              <span id="usuarios-count" class="badge"></span>
+            </div>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>Tipo</th>
+                  </tr>
+                </thead>
+                <tbody id="usuarios-table"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab-section" data-section="emprestimos">
+        <header class="section-header">
+          <div>
+            <h1>Controle de Empréstimos</h1>
+            <p class="section-subtitle">
+              Acompanhe retornos, atrasos e finalize empréstimos.
+            </p>
+          </div>
+          <div class="filters">
+            <input id="busca-emprestimo" type="search" placeholder="Buscar por usuário ou livro" />
+            <select id="status-emprestimo">
+              <option value="todos">Todos</option>
+              <option value="ativo">Ativos</option>
+              <option value="concluido">Concluídos</option>
+            </select>
+          </div>
+        </header>
+
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Resumo rápido</h2>
+            <div id="emprestimos-resumo" class="chips"></div>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Usuário</th>
+                  <th>Livro</th>
+                  <th>Retirada</th>
+                  <th>Previsto</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="emprestimos-table"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal" data-modal="add-livro">
+    <div class="modal-card">
+      <header>
+        <h3>Novo livro</h3>
+        <button class="icon-btn" data-close-modal>&times;</button>
+      </header>
+      <form id="form-add-livro" class="form-panel">
+        <label>
+          Título
+          <input type="text" name="titulo" placeholder="Nome do livro" required />
+        </label>
+        <label>
+          Autor
+          <input type="text" name="autor" placeholder="Autor" required />
+        </label>
+        <label>
+          ISBN
+          <input type="text" name="isbn" placeholder="978-1-23456-789-0" required />
+        </label>
+        <label>
+          Quantidade
+          <input type="number" name="quantidade" min="1" value="1" required />
+        </label>
+        <button type="submit" class="primary-btn">Salvar</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" data-modal="emprestimo">
+    <div class="modal-card">
+      <header>
+        <h3>Registrar empréstimo</h3>
+        <button class="icon-btn" data-close-modal>&times;</button>
+      </header>
+      <form id="form-emprestimo" class="form-panel">
+        <input type="hidden" name="livroId" />
+        <p id="emprestimo-livro-info" class="info-line"></p>
+        <label>
+          Usuário
+          <select name="usuarioId" required></select>
+        </label>
+        <label>
+          Dias de empréstimo
+          <input type="number" name="duracao" min="1" max="30" value="7" required />
+        </label>
+        <button type="submit" class="primary-btn">Confirmar empréstimo</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="libraryAdapter.js"></script>
+  <script src="app.js" defer></script>
+</body>
+
+</html>
