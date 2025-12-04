@@ -182,30 +182,37 @@
       this.emprestimos = [];
     }
 
-    carregarLocal(defaults = null) {
-      const rawL = localStorage.getItem(STORAGE_KEYS.livros);
-      const rawU = localStorage.getItem(STORAGE_KEYS.usuarios);
-      const rawE = localStorage.getItem(STORAGE_KEYS.emprestimos);
+  carregarLocal(defaults = null) {
+  const rawL = localStorage.getItem(STORAGE_KEYS.livros);
+  const rawU = localStorage.getItem(STORAGE_KEYS.usuarios);
+  const rawE = localStorage.getItem(STORAGE_KEYS.emprestimos);
 
-      if (rawL && rawU && rawE) {
-        try {
-          this.livros = JSON.parse(rawL).map(Livro.fromJSON);
-          this.usuarios = JSON.parse(rawU).map(Usuario.fromJSON);
-          this.emprestimos = JSON.parse(rawE).map(Emprestimo.fromJSON);
-          this.emprestimos.forEach((e) => e.verificarAtraso());
-          return;
-        } catch (err) {
-          console.warn("Falha parse localStorage", err);
-        }
-      }
+  if (rawL && rawU && rawE) {
+    try {
+      // Agora usando arrow function para manter contexto correto
+      this.livros = JSON.parse(rawL).map(l => Livro.fromJSON(l));
+      this.usuarios = JSON.parse(rawU).map(u => Usuario.fromJSON(u));
+      this.emprestimos = JSON.parse(rawE).map(e => Emprestimo.fromJSON(e));
 
-      if (defaults) {
-        this.livros = (defaults.livros || []).map(Livro.fromJSON);
-        this.usuarios = (defaults.usuarios || []).map(Usuario.fromJSON);
-        this.emprestimos = (defaults.emprestimos || []).map(Emprestimo.fromJSON);
-        this.salvarLocal();
-      }
+      // Atualiza atrasados
+      this.emprestimos.forEach(e => e.verificarAtraso());
+
+      return;
+    } catch (err) {
+      console.warn("Falha parse localStorage", err);
     }
+  }
+
+  // Carrega defaults
+  if (defaults) {
+    this.livros = (defaults.livros || []).map(l => Livro.fromJSON(l));
+    this.usuarios = (defaults.usuarios || []).map(u => Usuario.fromJSON(u));
+    this.emprestimos = (defaults.emprestimos || []).map(e => Emprestimo.fromJSON(e));
+
+    this.salvarLocal();
+  }
+}
+
 
     salvarLocal() {
       localStorage.setItem(

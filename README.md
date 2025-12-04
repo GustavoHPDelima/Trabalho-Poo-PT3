@@ -1,6 +1,5 @@
 # Projeto: Biblioteca AFYA
 
-Conteúdo gerado automaticamente por assistente.
 Inclui:
 - Código TypeScript em `src/`
 - Adapter browser em `web/libraryAdapter.js` e `web/app.js`
